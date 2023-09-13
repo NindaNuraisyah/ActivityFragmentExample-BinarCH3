@@ -5,15 +5,58 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
+import coil.load
 import com.catnip.activityfragmentexample.R
+import com.catnip.activityfragmentexample.databinding.FragmentTwoBinding
+import com.catnip.activityfragmentexample.model.Person
+import com.catnip.activityfragmentexample.presentation.fragmentone.FragmentOneDirections
 
 class FragmentTwo : Fragment() {
+
+    private lateinit var binding : FragmentTwoBinding
+
+    private val person : Person? by lazy {
+        //bundle arguments
+        // arguments?.getParcelable("person")
+        FragmentTwoArgs.fromBundle(arguments as Bundle).person
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_two, container, false)
+        binding = FragmentTwoBinding.inflate(inflater,container,false)
+        return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState:Bundle?){
+        super.onViewCreated(view, savedInstanceState)
+        setClickListener()
+        showprofileData()
+    }
+
+    private fun showprofileData() {
+        if(person != null){
+            binding.llProfile.isVisible = true
+            binding.ivProfileImg.load(person?.profilePictUrl)
+            binding.tvProfileDesc.text = person?.profileDesc
+            binding.tvName.text = person?.name
+            binding.tvJob.text = person?.job
+        }else {
+            binding.llProfile.isVisible = false
+            Toast.makeText(requireContext(), "Profile is Null", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun setClickListener() {
+        binding.btnNavigate.setOnClickListener {
+            navigateToFragmentThree()
+        }
+    }
+
+    private  fun navigateToFragmentThree() {
+        findNavController().navigate(R.id.action_fragmentTwo2_to_fragmentThree2)
+    }
 }
